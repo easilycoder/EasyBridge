@@ -1,0 +1,75 @@
+package easily.tech.easybridge.lib;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.util.AttributeSet;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+
+import easily.tech.easybridge.lib.handler.BridgeHandler;
+
+/**
+ * Created by lemon on 29/03/2018.
+ */
+public class EasyBridgeWebView extends WebView {
+
+    private static final String MAPPING_JS_INTERFACE_NAME = "_easybridge";
+    private static final String DEFAULT_BRIDGE_NAME = "easyBridge";
+    private final EasyBridge easyBridge;
+    private String bridgeName = DEFAULT_BRIDGE_NAME;
+
+    public EasyBridgeWebView(Context context, String bridgeName) {
+        this(context, (AttributeSet) null);
+        this.bridgeName = bridgeName;
+    }
+
+    public EasyBridgeWebView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        if (attrs != null) {
+            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.EasyBridgeWebView);
+            if (typedArray.hasValue(R.styleable.EasyBridgeWebView_bridgeName)) {
+                bridgeName = typedArray.getString(R.styleable.EasyBridgeWebView_bridgeName);
+            }
+            typedArray.recycle();
+        }
+        easyBridge = new EasyBridge(this, bridgeName);
+        initWebView();
+    }
+
+    @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
+    private void initWebView() {
+        // 开启JavaScript的支持
+        WebSettings webSettings = getSettings();
+        if (webSettings != null) {
+            webSettings.setJavaScriptEnabled(true);
+        }
+        addJavascriptInterface(easyBridge, MAPPING_JS_INTERFACE_NAME);
+        EasyBridgeWebViewClient webViewClient = new EasyBridgeWebViewClient(bridgeName, new SecurityPolicyChecker() {
+            @Override
+            public boolean check(String url, String parameters) {
+                // no security check default
+                return true;
+            }
+        });
+        setWebViewClient(webViewClient);
+    }
+
+    public void registerHandler(BridgeHandler handler) {
+        if (easyBridge != null) {
+            easyBridge.registerHandler(handler);
+        }
+    }
+
+    public void unregisterHandler(String handlerName) {
+        if (easyBridge != null) {
+            easyBridge.unregisterHandler(handlerName);
+        }
+    }
+
+    public void clear() {
+        if (easyBridge != null) {
+            easyBridge.clear();
+        }
+    }
+}
