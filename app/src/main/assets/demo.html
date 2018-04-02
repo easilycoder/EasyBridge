@@ -6,16 +6,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Page Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="easybridge.js"></script>
     <script type="text/javascript">
 
         document.addEventListener('WebViewJavascriptBridgeReady',
             function () {
                 toast('inject finished');
+                window['easyBridge'].resultBack = function (parameters, callback) {
+                    if (typeof callback == 'function') {
+                        callback(parameters);
+                    }
+                };
             }, false);
 
         function toast(params = 'toast data') {
-            window['easyBridge'].callHandler('toast', 'toast with:'+params+'at '+new Date().toLocaleString());
+            window['easyBridge'].callHandler('toast', 'toast with:' + params + 'at ' + new Date().toLocaleString());
         }
     </script>
 </head>

@@ -31,15 +31,47 @@
             parameters = args || {};
             parameters = JSON.stringify(parameters);
         }
-        //the name '_easybridge' is an java object that mapping to a javascrip onject,using addJavaInterface in Java code
+        //the name '_easybridge' is an java object that mapping to a javascript onject,using addJavaInterface in Java code
         if (window._easybridge) {
             setTimeout(function () {
+                //the function enqueue is the pubic method from Java Code,using to call Java logic
                 _easybridge.enqueue(handlerName, location.href, parameters, callbackId);
             }, 0);
         } else {
             console.error(bridgeName + ':' + "the mapping object '_easybridge' had not been added any more");
         }
     }
+
+    //the function for Java Code to invoked JavaScript function 
+    function _executeScript(handlerName, parameters, callbackId) {
+        if (!handlerName) {
+            console.error('invalid handlerName from Java code');
+            return;
+        }
+        var handler = window[bridgeName][handlerName];
+        if (!handler) {
+            console.error('the handler with name \'' + handlerName + '\' to be invoked is not existed');
+            return;
+        }
+        try {
+            if (callbackId) {
+                callbackFunc = function (result) {
+                    if (window._easybridge) {
+                        //the method onExecuteJSCallback is a Java Code,using to dispatch result after execute the JavaScript function from Java
+                        _easybridge.onExecuteJSCallback(callbackId, result);
+                    } else {
+                        console.error(bridgeName + ':' + "the mapping object '_easybridge' had not been added any more");
+                    }
+                };
+                handler(parameters, callbackFunc);
+            } else {
+                handler(parameters);
+            }
+        } catch (exception) {
+            console.error(exception);
+        }
+    }
+
 
     //the function for the java code to dispatch the result
     function _dispatchResult(callbackId, result) {
@@ -72,7 +104,9 @@
     //init the bridge object
     window[bridgeName] = {
         callHandler: callHandler,
+        _executeScript: _executeScript,
         _dispatchResult: _dispatchResult,
+
     };
     //notify to javascript that the bridge had been init
     var doc = document;

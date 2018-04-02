@@ -9,11 +9,14 @@ public abstract class ResultCallBack {
      */
     private String callbackId;
 
-    public ResultCallBack(String callbackId) {
+    public ResultCallBack() {
+    }
+
+    ResultCallBack(String callbackId) {
         this.callbackId = callbackId;
     }
 
-    public String getCallbackId() {
+    String getCallbackId() {
         return callbackId;
     }
 

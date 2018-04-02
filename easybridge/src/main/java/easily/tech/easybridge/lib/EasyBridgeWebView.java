@@ -62,6 +62,13 @@ public class EasyBridgeWebView extends WebView {
         }
     }
 
+    // use to execute JavaScript
+    public void callHandler(String handlerName, String parameters, ResultCallBack resultCallBack) {
+        if (easyBridge != null) {
+            easyBridge.callHandler(handlerName, parameters, resultCallBack);
+        }
+    }
+
     public void clear() {
         if (easyBridge != null) {
             easyBridge.clear();
@@ -78,5 +85,13 @@ public class EasyBridgeWebView extends WebView {
 
     public void setPolicyChecker(SecurityPolicyChecker policyChecker) {
         this.policyChecker = policyChecker;
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (easyBridge != null) {
+            easyBridge.destroy();
+        }
     }
 }

@@ -17,12 +17,12 @@ public class Utils {
         try {
             inputStream = context.getAssets().open(path);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            String line = null;
+            String line;
             StringBuilder fileContent = new StringBuilder();
             do {
                 line = bufferedReader.readLine();
                 // ignore the comments string in file
-                if (line != null && !line.matches("^\\s*\\/\\/.*")) {
+                if (line != null && !line.matches("^\\s*//.*")) {
                     fileContent.append(line);
                 }
             } while (line != null);
@@ -35,7 +35,8 @@ public class Utils {
             if (inputStream != null) {
                 try {
                     inputStream.close();
-                } catch (IOException e) {
+                } catch (IOException exception) {
+                    exception.printStackTrace();
                 }
             }
         }

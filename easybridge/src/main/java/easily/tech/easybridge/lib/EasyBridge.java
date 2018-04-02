@@ -2,7 +2,6 @@ package easily.tech.easybridge.lib;
 
 import android.os.Build;
 import android.os.Handler;
-import android.os.Message;
 import android.text.TextUtils;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
@@ -32,15 +31,19 @@ final class EasyBridge {
 
     private static final String JAVA_SCRIPT_PROTOCOL = "javascript:";
     private static final String CALLBACK_FUNCTION = "%s._dispatchResult(\"%s\",\'%s\')";
+    private static final String EXECUTE_SCRIPT = "%s._executeScript(\'%s\',\'%s\',\'%s\')";
 
     private Map<String, BridgeHandler> registerHandlerMap;
+    private Map<String, ResultCallBack> jsCallbackMap;
     private CallBackHandler callBackHandler;
     private SoftReference<WebView> bridgeWebView;
     private String bridgeName;
+    private static long uniqueId = 1;
 
     EasyBridge(WebView webView, String bridgeName) {
         this.bridgeName = bridgeName;
         registerHandlerMap = new HashMap<>();
+        jsCallbackMap = new HashMap<>();
         this.bridgeWebView = new SoftReference<>(webView);
         this.callBackHandler = new CallBackHandler();
     }
@@ -82,6 +85,39 @@ final class EasyBridge {
                 handler.onCall(parameters, callBack);
             }
         });
+    }
+
+    /**
+     * a method using to return the result from the Java Code execute the JavaScript
+     *
+     * @param callbackId the uniqueId for request
+     * @param result     the result from JavaScript
+     */
+    @JavascriptInterface
+    public void onExecuteJSCallback(String callbackId, final String result) {
+        if (jsCallbackMap == null || jsCallbackMap.isEmpty() || TextUtils.isEmpty(callbackId)) {
+            return;
+        }
+        final ResultCallBack resultCallBack = jsCallbackMap.get(callbackId);
+        if (resultCallBack != null) {
+            jsCallbackMap.remove(callbackId);
+            callBackHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    resultCallBack.onResult(result);
+                }
+            });
+        }
+    }
+
+    void callHandler(String handlerName, String parameters, ResultCallBack resultCallBack) {
+        String callbackId = "";
+        if (resultCallBack != null) {
+            callbackId = "cb_" + (uniqueId++) + System.currentTimeMillis();
+            jsCallbackMap.put(callbackId, resultCallBack);
+        }
+        String executeScript = String.format(EXECUTE_SCRIPT, bridgeName, handlerName, parameters, callbackId);
+        executeScriptInMain(executeScript);
     }
 
 
@@ -154,6 +190,15 @@ final class EasyBridge {
     void clear() {
         if (registerHandlerMap != null) {
             registerHandlerMap.clear();
+        }
+    }
+
+    void destroy() {
+        if (registerHandlerMap != null) {
+            registerHandlerMap.clear();
+        }
+        if (jsCallbackMap != null) {
+            jsCallbackMap.clear();
         }
     }
 
