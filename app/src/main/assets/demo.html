@@ -11,15 +11,15 @@
         document.addEventListener('WebViewJavascriptBridgeReady',
             function () {
                 toast('inject finished');
-                window['easyBridge'].resultBack = function (parameters, callback) {
+                window.easyBridge.registerHandler('resultBack', function (parameters, callback) {
                     if (typeof callback == 'function') {
                         callback(parameters);
                     }
-                };
+                });
             }, false);
 
         function toast(params = 'toast data') {
-            window['easyBridge'].callHandler('toast', 'toast with:' + params + 'at ' + new Date().toLocaleString());
+            window.easyBridge.callHandler('toast', 'toast with:' + params + 'at ' + new Date().toLocaleString());
         }
     </script>
 </head>

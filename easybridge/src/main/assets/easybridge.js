@@ -31,7 +31,7 @@
             parameters = args || {};
             parameters = JSON.stringify(parameters);
         }
-        //the name '_easybridge' is an java object that mapping to a javascript onject,using addJavaInterface in Java code
+        //the name '_easybridge' is an java object that mapping to a javascript object,using addJavaInterface in Java code
         if (window._easybridge) {
             setTimeout(function () {
                 //the function enqueue is the pubic method from Java Code,using to call Java logic
@@ -40,6 +40,11 @@
         } else {
             console.error(bridgeName + ':' + "the mapping object '_easybridge' had not been added any more");
         }
+    }
+
+    //the function for JavaScript to register handler that Java Code Can Executed
+    function registerHandler(handlerName, handler) {
+        window[bridgeName][handlerName] = handler;
     }
 
     //the function for Java Code to invoked JavaScript function 
@@ -104,6 +109,7 @@
     //init the bridge object
     window[bridgeName] = {
         callHandler: callHandler,
+        registerHandler: registerHandler,
         _executeScript: _executeScript,
         _dispatchResult: _dispatchResult,
 
