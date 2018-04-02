@@ -18,6 +18,7 @@ public class EasyBridgeWebView extends WebView {
     private static final String DEFAULT_BRIDGE_NAME = "easyBridge";
     private final EasyBridge easyBridge;
     private String bridgeName = DEFAULT_BRIDGE_NAME;
+    protected SecurityPolicyChecker policyChecker;
 
     public EasyBridgeWebView(Context context, String bridgeName) {
         this(context, (AttributeSet) null);
@@ -45,14 +46,8 @@ public class EasyBridgeWebView extends WebView {
             webSettings.setJavaScriptEnabled(true);
         }
         addJavascriptInterface(easyBridge, MAPPING_JS_INTERFACE_NAME);
-        EasyBridgeWebViewClient webViewClient = new EasyBridgeWebViewClient(bridgeName, new SecurityPolicyChecker() {
-            @Override
-            public boolean check(String url, String parameters) {
-                // no security check default
-                return true;
-            }
-        });
-        setWebViewClient(webViewClient);
+        EasyBridgeWebChromeClient webChromeClient = new EasyBridgeWebChromeClient(this);
+        setWebChromeClient(webChromeClient);
     }
 
     public void registerHandler(BridgeHandler handler) {
@@ -71,5 +66,17 @@ public class EasyBridgeWebView extends WebView {
         if (easyBridge != null) {
             easyBridge.clear();
         }
+    }
+
+    public String getBridgeName() {
+        return bridgeName;
+    }
+
+    public SecurityPolicyChecker getPolicyChecker() {
+        return policyChecker;
+    }
+
+    public void setPolicyChecker(SecurityPolicyChecker policyChecker) {
+        this.policyChecker = policyChecker;
     }
 }
