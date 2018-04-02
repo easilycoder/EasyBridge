@@ -24,11 +24,8 @@
             callbackArray[callbackId] = callback;
         }
 
-        var parameters;
-        if (typeof args == 'string') {
-            parameters = args;
-        } else {
-            parameters = args || {};
+        var parameters = args || "";
+        if (typeof parameters == 'object') {
             parameters = JSON.stringify(parameters);
         }
         //the name '_easybridge' is an java object that mapping to a javascript object,using addJavaInterface in Java code
