@@ -21,10 +21,18 @@
         function toast(params = 'toast data') {
             window.easyBridge.callHandler('toast', 'toast with:' + params + 'at ' + new Date().toLocaleString());
         }
+
+        function jumpToPage(){
+            var url=document.getElementById('tv_url').value;
+            window.open(url);
+        }
     </script>
 </head>
 
 <body>
+
+<input type="text" value="http://google.com" id="tv_url">
+<input type="button" value="jump" onclick="jumpToPage()">
 
 <a href="javascript:toast('click toast')">
     <h3>测试Toast</h3>

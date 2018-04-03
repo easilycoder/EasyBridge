@@ -10,11 +10,20 @@ import android.webkit.WebView;
 import easily.tech.easybridge.lib.handler.BridgeHandler;
 
 /**
+ * this class is the main entrance of the library,you are supposed to do things as bellow:
+ * 1. register handler that to be call by JavaScript:{@link #registerHandler(BridgeHandler)}
+ * 2. set a global security checker:{@link #setPolicyChecker(SecurityPolicyChecker)}
+ *    before inject a bridge,you will receive a check request with the parameters:{@link EasyBridgeWebChromeClient#SECURITY_CHECK_PARAMETERS},make your idea about it;
+ * 3. you can make a global security check by:{@link #checkSecurityGlobally(String, String)}
+ * 4. you can call the JavaScript function with:{@link #callHandler(String, String, ResultCallBack)},
+ *    but make sure before:you had register a JavaScript handler using the bridge,the code is like below:
+ *    "window.easyBridge.registerHandler(handlerName,realFunction)"
+ * <p>
  * Created by lemon on 29/03/2018.
  */
 public class EasyBridgeWebView extends WebView {
 
-    private static final String MAPPING_JS_INTERFACE_NAME = "_easybridge";
+    static final String MAPPING_JS_INTERFACE_NAME = "_easybridge";
     private static final String DEFAULT_BRIDGE_NAME = "easyBridge";
     private final EasyBridge easyBridge;
     private String bridgeName = DEFAULT_BRIDGE_NAME;
@@ -79,10 +88,16 @@ public class EasyBridgeWebView extends WebView {
         return bridgeName;
     }
 
-    public SecurityPolicyChecker getPolicyChecker() {
-        return policyChecker;
+    public boolean checkSecurityGlobally(String url, String parameters) {
+        return policyChecker == null || policyChecker.check(url, parameters);
     }
 
+    /**
+     * make sure that ,the instance {@link SecurityPolicyChecker} set here is working globally,
+     * if the security checked failed ,the bridge is not allowed to using (it will remove the bridge inner)
+     *
+     * @param policyChecker a global {@link SecurityPolicyChecker} instance
+     */
     public void setPolicyChecker(SecurityPolicyChecker policyChecker) {
         this.policyChecker = policyChecker;
     }
