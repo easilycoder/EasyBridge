@@ -1,3 +1,50 @@
+# FEATURE
+
+#### :heavy_check_mark: JavaScript调用Java功能
+
+**支持同步和异步两种方式的调用（目前仅开放异步调用，但实现原理本身支持同步调用）**
+
+要使用这个功能，总共以下几个步骤：
+
+1. 业务的JavaScript代码监听Bridge的注入完成事件`WebViewJavascriptBridgeReady`；
+2. 使用步骤1注入的`easyBridge`对象（对象名字支持自定义）的`callHandler(handlerName, args, callback)`函数调用Java代码。
+
+**请根据业务需要定义JavaScript与Java的通讯协议**
+
+#### :heavy_check_mark: Java调用JavaScript功能
+
+可以在Java代码中调用注册在EasyBridge上的JavaScript函数，步骤如下：
+
+1. 业务的JavaScript代码监听Bridge的注入完成事件`WebViewJavascriptBridgeReady`；
+2. 使用步骤1注入的`easyBridge`对象（对象名字支持自定义）的`registerHandler(handlerName, handler)`方法，注册可供Java调用的方法；
+3. 在Java层，调用EasyBridge的`EasyBridgeWebView`实例的`callHandler(handlerName,parameters,resultCallBack)`方法，JavaScript的执行结果会通过第三个参数回调返回。
+
+**请根据业务需要定义JavaScript与Java的通讯协议**
+
+#### :heavy_check_mark: 全局的安全控制策略
+
+EasyBridge提供两种安全检查策略。其中全局的安全检查在EasyBridge的内部发生在以下两个时机：
+
+* **Java注入Bridge通讯桥的时候.**
+
+  如果被安全检查禁止，则不会在页面中注入bridge对象，即无法访问Java中的方法
+
+* **JavaScript调用具体的Java接口的时候.**
+
+  如果被安全检查禁止，则不会触发下面的接口粒度的安全检查也无法访问Java中的方法
+
+要使用全局的安全控制策略，步骤如下：
+
+1. 调用EasyBridge的`EasyBridgeWebView`实例的`setPolicyChecker(policyChecker)`方法设置全局安全检查对象实例；
+2. 需要在其他时机触发全局的安全检查请调用`checkSecurityGlobally(url,parameters)`方法
+
+#### :heavy_check_mark: 基于接口粒度的安全控制策略
+
+接口粒度的安全检查是在执行对应的Java方法之前的最后一个检查点。要使用接口粒度的安全检查，步骤如下：
+
+1. 构造对应的`BridgeHandler`接口对象实例
+2. 实现对应的`SecurityPolicyChecker`实例，并提供给步骤1的接口实例
+
 # EasyBridge
 
 [EasyBridge](https://github.com/easilycoder/EasyBridge)是一个简单易用的js-bridge的工具库，提供了日常开发中，JavaScript与Java之间通讯的能力，与其他常见的js-bridge工具库实现方案不同，**EasyBridge**具备以下几个特点：
