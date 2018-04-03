@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
-import android.webkit.WebView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -36,11 +35,11 @@ final class EasyBridge {
     private Map<String, BridgeHandler> registerHandlerMap;
     private Map<String, ResultCallBack> jsCallbackMap;
     private CallBackHandler callBackHandler;
-    private SoftReference<WebView> bridgeWebView;
+    private SoftReference<EasyBridgeWebView> bridgeWebView;
     private String bridgeName;
     private static long uniqueId = 1;
 
-    EasyBridge(WebView webView, String bridgeName) {
+    EasyBridge(EasyBridgeWebView webView, String bridgeName) {
         this.bridgeName = bridgeName;
         registerHandlerMap = new HashMap<>();
         jsCallbackMap = new HashMap<>();
@@ -74,6 +73,12 @@ final class EasyBridge {
             callBack.onResult(CallBackMessage.generateErrorMessage(CallBackMessage.CODE_NO_HANDLER, "handler with name " + handlerName + " is not registered in Java code"));
             return;
         }
+        // global security check
+        if (!checkGlobalSecurity(currentPageUrl, parameters)) {
+            callBack.onResult(CallBackMessage.generateErrorMessage(CODE_SECURITY_FORBIDDEN, "handler with name " + handlerName + " is not allowed to invoke in page:" + currentPageUrl + " by the global Security Checker"));
+            return;
+        }
+        // handler security check
         if (handler.securityPolicyChecker() != null && !handler.securityPolicyChecker().check(currentPageUrl, parameters)) {
             callBack.onResult(CallBackMessage.generateErrorMessage(CODE_SECURITY_FORBIDDEN, "handler with name " + handlerName + " is not allowed to invoke in page:" + currentPageUrl));
             return;
@@ -171,6 +176,15 @@ final class EasyBridge {
             }
         }
         return null;
+    }
+
+    private boolean checkGlobalSecurity(String url, String parameters) {
+        //can not reach the policyChecker,return true directly
+        if (bridgeWebView == null || bridgeWebView.get() == null || bridgeWebView.get().policyChecker == null) {
+            return true;
+        }
+        SecurityPolicyChecker checker = bridgeWebView.get().policyChecker;
+        return checker.check(url, parameters);
     }
 
     void registerHandler(BridgeHandler handler) {
