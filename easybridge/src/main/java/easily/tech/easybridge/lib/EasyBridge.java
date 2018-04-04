@@ -207,6 +207,13 @@ final class EasyBridge {
         }
     }
 
+    Map<String, BridgeHandler> getRegisterHandlerMap() {
+        if (registerHandlerMap == null) {
+            return new HashMap<>();
+        }
+        return registerHandlerMap;
+    }
+
     void destroy() {
         if (registerHandlerMap != null) {
             registerHandlerMap.clear();

@@ -7,17 +7,20 @@ import android.util.AttributeSet;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import easily.tech.easybridge.lib.handler.BridgeHandler;
 
 /**
  * this class is the main entrance of the library,you are supposed to do things as bellow:
  * 1. register handler that to be call by JavaScript:{@link #registerHandler(BridgeHandler)}
  * 2. set a global security checker:{@link #setPolicyChecker(SecurityPolicyChecker)}
- *    before inject a bridge,you will receive a check request with the parameters:{@link EasyBridgeWebChromeClient#SECURITY_CHECK_PARAMETERS},make your idea about it;
+ * before inject a bridge,you will receive a check request with the parameters:{@link EasyBridgeWebChromeClient#SECURITY_CHECK_PARAMETERS},make your idea about it;
  * 3. you can make a global security check by:{@link #checkSecurityGlobally(String, String)}
  * 4. you can call the JavaScript function with:{@link #callHandler(String, String, ResultCallBack)},
- *    but make sure before:you had register a JavaScript handler using the bridge,the code is like below:
- *    "window.easyBridge.registerHandler(handlerName,realFunction)"
+ * but make sure before:you had register a JavaScript handler using the bridge,the code is like below:
+ * "window.easyBridge.registerHandler(handlerName,realFunction)"
  * <p>
  * Created by lemon on 29/03/2018.
  */
@@ -76,6 +79,13 @@ public class EasyBridgeWebView extends WebView {
         if (easyBridge != null) {
             easyBridge.callHandler(handlerName, parameters, resultCallBack);
         }
+    }
+
+    public Map<String, BridgeHandler> getAllRegisterHandlers() {
+        if (easyBridge == null) {
+            return new HashMap<>();
+        }
+        return easyBridge.getRegisterHandlerMap();
     }
 
     public void clear() {

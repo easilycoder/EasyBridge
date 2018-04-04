@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.webkit.*
 import android.widget.Toast
-import easily.tech.easybridge.handler.ToastHandler
+import easily.tech.easybridge.lib.EBHandlerManager
 import easily.tech.easybridge.lib.EasyBridgeWebChromeClient
 import easily.tech.easybridge.lib.ResultCallBack
 import kotlinx.android.synthetic.main.activity_main.*
@@ -19,6 +19,13 @@ class MainActivity : AppCompatActivity() {
             WebView.setWebContentsDebuggingEnabled(true)
         }
         setContentView(R.layout.activity_main)
+        init()
+        webView.loadUrl("file:///android_asset/demo.html")
+
+    }
+
+    private fun init() {
+        EBHandlerManager.register(webView)
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                 return false
@@ -37,10 +44,6 @@ class MainActivity : AppCompatActivity() {
                 else -> true
             }
         }))
-
-        webView.registerHandler(ToastHandler(this))
-
-        webView.loadUrl("file:///android_asset/demo.html")
         // call JavaScript From Java
         webView.postDelayed({
             webView.callHandler("resultBack", "this is the value pass from Java", object : ResultCallBack() {

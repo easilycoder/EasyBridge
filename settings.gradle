@@ -1,1 +1,1 @@
-include ':app', ':easybridge'
+include ':app', ':easybridge', ':easybridge-annotation', ':easybridge-processor'

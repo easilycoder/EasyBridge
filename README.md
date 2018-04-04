@@ -1,5 +1,24 @@
 # FEATURE
 
+#### :heavy_check_mark: 使用apt技术注册handler
+
+支持使用apt技术，完成注册handler的功能，步骤如下：
+
+1. 添加下面的依赖
+
+   ```Gradle
+   implementation project(':easybridge-annotation')
+   kapt project(':easybridge-processor') // in kotlin
+   ```
+
+2. 使用注解`@EasyBridgeHandler`
+
+3. 项目编译之后会生成工具类`EBHandlerManager`
+
+4. 在页面初始化webview的时候，调用步骤三得到的`EBHandlerManager`的静态方法`register(webview)`
+
+**目前仅支持构造`BaseBridgeHandler` 的子类实例（具体与之一致的构造方法），后续会对这一点改进，使其适应具备不同构造方法对handler实例**
+
 #### :heavy_check_mark: JavaScript调用Java功能
 
 **支持同步和异步两种方式的调用（目前仅开放异步调用，但实现原理本身支持同步调用）**

@@ -10,6 +10,8 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/easybridge" />
+            <option value="$PROJECT_DIR$/easybridge-annotation" />
+            <option value="$PROJECT_DIR$/easybridge-processor" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

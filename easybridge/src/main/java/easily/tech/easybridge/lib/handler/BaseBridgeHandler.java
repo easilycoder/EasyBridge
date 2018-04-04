@@ -2,6 +2,7 @@ package easily.tech.easybridge.lib.handler;
 
 import android.support.annotation.NonNull;
 
+import easily.tech.easybridge.lib.EasyBridgeWebView;
 import easily.tech.easybridge.lib.SecurityPolicyChecker;
 
 /**
@@ -11,13 +12,15 @@ public abstract class BaseBridgeHandler implements BridgeHandler {
 
     protected String name;
     protected SecurityPolicyChecker checker;
+    protected EasyBridgeWebView webView;
 
-    public BaseBridgeHandler(String name) {
-        this(name, null);
+    public BaseBridgeHandler(String name, EasyBridgeWebView webView) {
+        this(name, webView, null);
     }
 
-    public BaseBridgeHandler(String name, SecurityPolicyChecker securityPolicyChecker) {
+    public BaseBridgeHandler(String name, EasyBridgeWebView webView, SecurityPolicyChecker securityPolicyChecker) {
         this.name = name;
+        this.webView = webView;
         this.checker = securityPolicyChecker;
     }
 
@@ -34,5 +37,9 @@ public abstract class BaseBridgeHandler implements BridgeHandler {
 
     public void setSecurityPolicyChecker(SecurityPolicyChecker securityPolicyChecker) {
         this.checker = securityPolicyChecker;
+    }
+
+    public void destroy() {
+        webView = null;
     }
 }
