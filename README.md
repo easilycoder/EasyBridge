@@ -1,15 +1,12 @@
+[![](https://jitpack.io/v/easilycoder/EasyBridge.svg)](https://jitpack.io/#easilycoder/EasyBridge)
+
 # FEATURE
 
 #### :heavy_check_mark: 使用apt技术注册handler
 
 支持使用apt技术，完成注册handler的功能，步骤如下：
 
-1. 添加下面的依赖
-
-   ```Gradle
-   implementation project(':easybridge-annotation')
-   kapt project(':easybridge-processor') // in kotlin
-   ```
+1. 添加依赖(参考下面的方案使用)
 
 2. 使用注解`@EasyBridgeHandler`
 
@@ -63,6 +60,38 @@ EasyBridge提供两种安全检查策略。其中全局的安全检查在EasyBri
 
 1. 构造对应的`BridgeHandler`接口对象实例
 2. 实现对应的`SecurityPolicyChecker`实例，并提供给步骤1的接口实例
+
+# USAGE
+
+**EasyBridge**已经发布到[Jitpack](https://jitpack.io/#easilycoder/EasyBridge)上，你可以快速将引入EasyBridge库。
+
+1. 在根目录的build.gradle文件中添加jitpack仓库
+
+   ```Gradle
+   allprojects {
+   	repositories {
+   		...
+   		maven { url 'https://jitpack.io' }
+   	}
+   }
+   ```
+
+2. 添加EasyBridge依赖
+
+   ```gradle
+   dependencies {
+   	compile 'com.github.easilycoder.EasyBridge:easybridge:0.0.1'// change the version to the newest one
+   }
+   ```
+
+3. 如果你需要使用提供的注解功能，添加以下的依赖
+
+   ```gradle
+   dependencies {
+   	compile 'com.github.easilycoder.EasyBridge:easybridge-annotation:0.0.1' // change the version to the newest one
+   	annotationProcessor 'com.github.easilycoder.EasyBridge:easybridge-processor:0.0.1' // change the version to the newest one
+   }
+   ```
 
 # EasyBridge
 
