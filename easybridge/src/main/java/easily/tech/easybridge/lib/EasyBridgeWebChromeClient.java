@@ -4,7 +4,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
 /**
- * Created by hzyangjiehao on 2018/4/2.
+ * Created by lemon on 2018/4/2.
  */
 public class EasyBridgeWebChromeClient extends WebChromeClient {
 

@@ -84,10 +84,9 @@ EasyBridge提供两种安全检查策略。其中全局的安全检查在EasyBri
 
 ## 方案设计说明
 
-**EasyBridge**最终方案实现，只支持了异步调用的方式，主要是基于以下两点的考量：
+**EasyBridge**最终方案实现，只支持了异步调用的方式，主要是基于以下的考量：
 
 * 同步的调用可以转化为异步调用的方式，保留一种调用方式会使得整个方案更加简单；
-* 目前iOS不支持同步的调用。
 
 ### 方案结构
 
@@ -99,7 +98,7 @@ EasyBridge提供两种安全检查策略。其中全局的安全检查在EasyBri
 
 * **easyBridge**
 
-  在页面加载完成`onPageFinished()`回调的时候，通过执行工具库中的一个js文件注入的。这个对象主要的作用是定义了业务页面的JavaScript代码调用native的Java代码的规范入口，对象中定义的一个最关键的函数就是`callHandler(handlerName, args, callback)`，这就是桥梁的入口。实际上在这个方法的内部，最终就是通过下面的**_easybridge**对象进入到Java代码层。
+  在页面加载到25%以上到时候（`onProgressChanged()`），通过执行工具库中的一个js文件注入的。这个对象主要的作用是定义了业务页面的JavaScript代码调用native的Java代码的规范入口，对象中定义的一个最关键的函数就是`callHandler(handlerName, args, callback)`，这就是桥梁的入口。实际上在这个方法的内部，最终就是通过下面的**_easybridge**对象进入到Java代码层。
 
 * _easybridge
 
