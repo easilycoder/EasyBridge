@@ -1,22 +1,100 @@
 [![](https://jitpack.io/v/easilycoder/EasyBridge.svg)](https://jitpack.io/#easilycoder/EasyBridge)
 
-# FEATURE
+(中文文档[在这里](#README_CN))
 
-#### :heavy_check_mark: 使用apt技术注册handler
+# FEATURES
+
+#### ✔️ Register Handler with APT
+
+Now you can register Handlers using the APT tech.Follow the steps:
+
+1. add the jitpack dependencies as below ;
+2. add the annotation `@EasyBridgeHandler` to your handler;
+3. A class Named `EBHandlerManager` will be generated after buiding the project;
+4. call the static method `EBHandlerManager#register(webview)` when you init the webview for the activity/fragment.
+
+#### ✔️ Using Java IN JavaScript
+
+EasyBridge allow you to invoke Java function both in **Synchronize** and **Asynchronous** ways.(But it's pity that the Asynchronous way is only opened for you nowadays)
+
+Follow the steps:
+
+1. Register the document event `WebViewJavascriptBridgeReady` in your JavaScript logic;
+2. Using the `easyBridge#callHandler(handlerName, args, callback)`in your JavaScript when you received the event that the bridge had been injected.The object named `easyBridge`can be renamed as you like.
+
+#### ✔️ Using JavaScript IN Java
+
+You can call all the JavaScirpt function that had been registed to the `easyBridge`.Steps as follow:
+
+1. Register the document event `WebViewJavascriptBridgeReady` in your JavaScript logic;
+2. Using the `easyBridge#registerHandler(handlerName, handler)`to registed all the functions that you want to be invoked in Java;
+3. Calling the function `EasyBridgeWebView#callHandler(handlerName,parameters,resultCallBack)` in Java layer to reach your JavaScript functions.
+
+#### ✔️ Global Security Policy Check
+
+Global Security check will be actived once you had defined it before in the situations below:
+
+- Time at bridge Injecting in Java layer
+
+  no bridge object will be injected if breaking the rule of global security check.The old bridge object injected in the previous page also will be removed .
+
+
+- Time at calling the Java functions in JavaScript layer
+
+  No Java functions will be invoked if breaking the rule of global security check.
+
+#### ✔️ Security policy check on Handlers
+
+The last point to make a security check based on the security policy of the handler that is about to be invoked in JavaScript.
+
+You can set your policy according to the current page's url and the parameters you received from JavaScript 
+
+# DEPENDENCIES
+
+**EasyBridge** had been pubished to [Jitpack](https://jitpack.io/#easilycoder/EasyBridge), add the dependencies to your project before using it,follow the steps:
+
+1. add the Jitpack responsitory
+
+   ```gradle
+   allprojects {
+   	repositories {
+   		...
+   		maven { url 'https://jitpack.io' }
+   	}
+   }
+   ```
+
+2. add the core dependencies of EasyBridge
+
+   ```gralde
+   dependencies {
+   	compile 'com.github.easilycoder.EasyBridge:easybridge:0.0.1'// change the version to the newest one
+   }
+   ```
+
+3. If you would to try to APT tech for registing handler ,add the dependencies below
+
+   ```gradle
+   dependencies {
+   	compile 'com.github.easilycoder.EasyBridge:easybridge-annotation:0.0.1' // change the version to the newest one
+   	annotationProcessor 'com.github.easilycoder.EasyBridge:easybridge-processor:0.0.1' // change the version to the newest one
+   }
+   ```
+
+# <a name="README_CN">功能</a>
+
+#### ✔️ 使用apt技术注册handler
 
 支持使用apt技术，完成注册handler的功能，步骤如下：
 
 1. 添加依赖(参考下面的方案使用)
-
 2. 使用注解`@EasyBridgeHandler`
-
 3. 项目编译之后会生成工具类`EBHandlerManager`
-
 4. 在页面初始化webview的时候，调用步骤三得到的`EBHandlerManager`的静态方法`register(webview)`
 
 **目前仅支持构造`BaseBridgeHandler` 的子类实例（具体与之一致的构造方法），后续会对这一点改进，使其适应具备不同构造方法对handler实例**
 
-#### :heavy_check_mark: JavaScript调用Java功能
+#### ✔️ JavaScript调用Java功能
 
 **支持同步和异步两种方式的调用（目前仅开放异步调用，但实现原理本身支持同步调用）**
 
@@ -27,7 +105,7 @@
 
 **请根据业务需要定义JavaScript与Java的通讯协议**
 
-#### :heavy_check_mark: Java调用JavaScript功能
+#### ✔️ Java调用JavaScript功能
 
 可以在Java代码中调用注册在EasyBridge上的JavaScript函数，步骤如下：
 
@@ -37,15 +115,15 @@
 
 **请根据业务需要定义JavaScript与Java的通讯协议**
 
-#### :heavy_check_mark: 全局的安全控制策略
+#### ✔️ 全局的安全控制策略
 
 EasyBridge提供两种安全检查策略。其中全局的安全检查在EasyBridge的内部发生在以下两个时机：
 
-* **Java注入Bridge通讯桥的时候.**
+- **Java注入Bridge通讯桥的时候.**
 
   如果被安全检查禁止，则不会在页面中注入bridge对象，即无法访问Java中的方法
 
-* **JavaScript调用具体的Java接口的时候.**
+- **JavaScript调用具体的Java接口的时候.**
 
   如果被安全检查禁止，则不会触发下面的接口粒度的安全检查也无法访问Java中的方法
 
@@ -54,20 +132,20 @@ EasyBridge提供两种安全检查策略。其中全局的安全检查在EasyBri
 1. 调用EasyBridge的`EasyBridgeWebView`实例的`setPolicyChecker(policyChecker)`方法设置全局安全检查对象实例；
 2. 需要在其他时机触发全局的安全检查请调用`checkSecurityGlobally(url,parameters)`方法
 
-#### :heavy_check_mark: 基于接口粒度的安全控制策略
+#### ✔️ 基于接口粒度的安全控制策略
 
 接口粒度的安全检查是在执行对应的Java方法之前的最后一个检查点。要使用接口粒度的安全检查，步骤如下：
 
 1. 构造对应的`BridgeHandler`接口对象实例
 2. 实现对应的`SecurityPolicyChecker`实例，并提供给步骤1的接口实例
 
-# USAGE
+# 添加依赖
 
 **EasyBridge**已经发布到[Jitpack](https://jitpack.io/#easilycoder/EasyBridge)上，你可以快速将引入EasyBridge库。
 
 1. 在根目录的build.gradle文件中添加jitpack仓库
 
-   ```Gradle
+   ```gradle
    allprojects {
    	repositories {
    		...
@@ -97,44 +175,44 @@ EasyBridge提供两种安全检查策略。其中全局的安全检查在EasyBri
 
 [EasyBridge](https://github.com/easilycoder/EasyBridge)是一个简单易用的js-bridge的工具库，提供了日常开发中，JavaScript与Java之间通讯的能力，与其他常见的js-bridge工具库实现方案不同，**EasyBridge**具备以下几个特点：
 
-* 基于Android `WebView`的`addJavascriptInterface`特性实现
-* 提供了基于接口粒度的安全管理接口
-* 轻量级，并且简单易用。以这个工具库作为依赖，只需要编写实际通讯接口
+- 基于Android `WebView`的`addJavascriptInterface`特性实现
+- 提供了基于接口粒度的安全管理接口
+- 轻量级，并且简单易用。以这个工具库作为依赖，只需要编写实际通讯接口
 
 ## 实现原理说明
 
 混合开发一直是工业界移动端开发比较看好的技术手段，结合h5的特性，能够更好的支持业务发展的需要，不仅快速上线、部署功能而且能够快速响应线上的bug。目前混合开发的方案包括：
 
-* JSBridge
-* [Cordova](https://cordova.apache.org)
-* [React Native](https://facebook.github.io/react-native/)
-* [Flutter](https://flutter.io)
+- JSBridge
+- [Cordova](https://cordova.apache.org)
+- [React Native](https://facebook.github.io/react-native/)
+- [Flutter](https://flutter.io)
 
 **EasyBridge**就是一种简单的JSBridge解决方案。在众多的解决方案中，都是在利用系统的`WebView`所开放的权限和接口，打开Java与JavaScript通讯的渠道，这些方案的实现原理分别包括：
 
-* 拦截`onJsPrompt()`方法
+- 拦截`onJsPrompt()`方法
 
   当`WebView`中的页面调用了JavaScript当中的`window.prompt()`方法的时候，这个方法会被回调。而且这个方法不仅能获取到JavaScript传递过来的string字符串内容，同时也能返回一段string字符串内容被JavaScript接收到，是一个相当适合构建bridge的入口方法。
 
-* 拦截`shouldOverrideUrlLoading()`方法
+- 拦截`shouldOverrideUrlLoading()`方法
 
   当页面重新load URL或者页面的iframe元素重新加载新的URL的时候，这个方法被回调。
 
-* `addJavascriptInterface()`接口
+- `addJavascriptInterface()`接口
 
   这个接口简单却强大，通过这个接口，我们能够直接把Java中定义的对象在JavaScript中映射出一个对应的对象，使其直接调用Java当中的方法，但是，在android 4.1及之前的版本存在着严重的漏洞，所以一直被忽视。
 
 **EasyBridge**在众多的解决方案中，最终了选择了`addJavascriptInterface()`接口作为方案的基础，主要基于以下几点考量：
 
-* 目前Android版本已经到了9.0版本，市面上Android4.4之前的版本手机占有率已经很低，很多业务都已经把最低兼容版本定在了4.2以上，因此不需要考量4.1以下存在的漏洞问题；
-* `addJavascriptInterface()`能够提供最简单的同步调用
-* `addJavascriptInterface()`与`evaluateJavascript()`/`loadUrl`结合，能够带来更加简单的异步调用的解决方案
+- 目前Android版本已经到了9.0版本，市面上Android4.4之前的版本手机占有率已经很低，很多业务都已经把最低兼容版本定在了4.2以上，因此不需要考量4.1以下存在的漏洞问题；
+- `addJavascriptInterface()`能够提供最简单的同步调用
+- `addJavascriptInterface()`与`evaluateJavascript()`/`loadUrl`结合，能够带来更加简单的异步调用的解决方案
 
 ## 方案设计说明
 
 **EasyBridge**最终方案实现，只支持了异步调用的方式，主要是基于以下的考量：
 
-* 同步的调用可以转化为异步调用的方式，保留一种调用方式会使得整个方案更加简单；
+- 同步的调用可以转化为异步调用的方式，保留一种调用方式会使得整个方案更加简单；
 
 ### 方案结构
 
@@ -144,11 +222,11 @@ EasyBridge提供两种安全检查策略。其中全局的安全检查在EasyBri
 
 **EasyBridge**总共会向页面中注入两个JavaScript对象，：
 
-* **easyBridge**
+- **easyBridge**
 
   在页面加载到25%以上到时候（`onProgressChanged()`），通过执行工具库中的一个js文件注入的。这个对象主要的作用是定义了业务页面的JavaScript代码调用native的Java代码的规范入口，对象中定义的一个最关键的函数就是`callHandler(handlerName, args, callback)`，这就是桥梁的入口。实际上在这个方法的内部，最终就是通过下面的**_easybridge**对象进入到Java代码层。
 
-* _easybridge
+- _easybridge
 
   通过`addJavascriptInterface()`映射和注入的一个对象，这个对象提供了实质的入口方法`enqueue()`，在这个方法当中代码的路线从JavaScript层进入到了Java层，开启了两者的交互。
 
