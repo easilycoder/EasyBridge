@@ -11,13 +11,22 @@ public interface BridgeHandler {
     String getHandlerName();
 
     /**
-     * async call from js
+     * async call from JavaScript
      * <p>
      *
-     * @param parameters value passed from js
+     * @param parameters value passed from JavaScript
      * @param callBack   when code execute finish ,callback
      */
     void onCall(String parameters, ResultCallBack callBack);
+
+    /**
+     * sync call from JavaScript
+     * keep in mind that this method is not invoked in main thread
+     *
+     * @param parameters value passed from JavaScript
+     * @return
+     */
+    Object onCall(String parameters);
 
     SecurityPolicyChecker securityPolicyChecker();
 }

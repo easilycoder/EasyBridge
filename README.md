@@ -2,6 +2,14 @@
 
 (中文文档[在这里](#README_CN))
 
+# UPDATES
+
+* 2017/04/08  invoke Java synchornized from Javascript is now enable in `feature/sync`
+
+  Now the `BridgeHandler` has two function to be invoked from JavaScript.If the JavaScirpt invoke Java with a callback function,the Java method will be invoked Synchronizlly ,otherwise the Java method will be invoked asynchronous.
+
+  **the feature/sync may be merged into master oneday future**
+
 # FEATURES
 
 #### ✔️ Register Handler with APT

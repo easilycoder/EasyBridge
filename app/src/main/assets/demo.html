@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Page Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,8 +18,15 @@
                 });
             }, false);
 
-        function toast(params = 'toast data') {
+        function toast(params = 'toast sync') {
             window.easyBridge.callHandler('toast', 'toast with:' + params + 'at ' + new Date().toLocaleString());
+        }
+
+        function toastAsync(params = 'toast Async'){
+            easyBridge.callHandler('toast', 'toast with:' + params + 'at ' + new Date().toLocaleString(),function(result){
+                console.log('callback data:'+result);
+
+            });
         }
 
         function jumpToPage(){
@@ -35,7 +42,11 @@
 <input type="button" value="jump" onclick="jumpToPage()">
 
 <a href="javascript:toast('click toast')">
-    <h3>测试Toast</h3>
+    <h3>同步调用Toast</h3>
+</a>
+
+<a href="javascript:toastAsync('click toast')">
+    <h3>异步调用Toast</h3>
 </a>
 
 </body>

@@ -15,6 +15,8 @@ import java.util.Map;
 
 import tech.easily.easybridge.lib.handler.BridgeHandler;
 
+import static tech.easily.easybridge.lib.CallBackMessage.CODE_INVALID_HANDLER;
+import static tech.easily.easybridge.lib.CallBackMessage.CODE_NO_HANDLER;
 import static tech.easily.easybridge.lib.CallBackMessage.CODE_SECURITY_FORBIDDEN;
 
 /**
@@ -56,7 +58,7 @@ final class EasyBridge {
      * @param callbackId  the unique id to invoke js callback function
      */
     @JavascriptInterface
-    public void enqueue(String handlerName, String currentPageUrl, final String parameters, String callbackId) {
+    void enqueue(String handlerName, String currentPageUrl, final String parameters, String callbackId) {
         final Gson gson = new GsonBuilder().create();
         final ResultCallBack callBack = new ResultCallBack(callbackId) {
             @Override
@@ -64,32 +66,68 @@ final class EasyBridge {
                 dispatchResult(getCallbackId(), gson.toJson(CallBackMessage.generateSuccessMessage(result)));
             }
         };
+        try {
+            final BridgeHandler handler = checkParameters(handlerName, currentPageUrl, parameters);
+            // invoke the handler in main thread
+            callBackHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    handler.onCall(parameters, callBack);
+                }
+            });
+        } catch (EasyBridgeInvokeException exception) {
+            callBack.onResult(CallBackMessage.generateErrorMessage(exception.errorCode, exception.getMessage()));
+        }
+    }
+
+    /**
+     * JavaScript invoke Java sync
+     * keep in mind that this method is not invoked in main thread
+     *
+     * @param handlerName    name
+     * @param currentPageUrl current page url
+     * @param parameters     values from js
+     * @return
+     */
+    @JavascriptInterface
+    String onRealCall(String handlerName, String currentPageUrl, final String parameters) {
+        final Gson gson = new GsonBuilder().create();
+        CallBackMessage result = null;
+        try {
+            BridgeHandler handler = checkParameters(handlerName, currentPageUrl, parameters);
+            result = CallBackMessage.generateSuccessMessage(handler.onCall(parameters));
+        } catch (EasyBridgeInvokeException exception) {
+            result = CallBackMessage.generateErrorMessage(exception.errorCode, exception.getMessage());
+        }
+        return gson.toJson(result);
+    }
+
+
+    private BridgeHandler checkParameters(String handlerName, String currentPageUrl, final String parameters) throws EasyBridgeInvokeException {
+        int errorCode;
+        String errorMessage;
         if (TextUtils.isEmpty(handlerName)) {
-            callBack.onResult(CallBackMessage.generateErrorMessage(CallBackMessage.CODE_INVALID_HANDLER, "the handlerName is not invalid"));
-            return;
+            errorCode = CODE_INVALID_HANDLER;
+            errorMessage = "the handlerName is not invalid";
+            throw new EasyBridgeInvokeException(errorCode, errorMessage);
+        }
+        if (!checkGlobalSecurity(currentPageUrl, parameters)) {
+            errorCode = CODE_SECURITY_FORBIDDEN;
+            errorMessage = "handler with name " + handlerName + " is not allowed to invoke in page:" + currentPageUrl + " by the global Security Checker";
+            throw new EasyBridgeInvokeException(errorCode, errorMessage);
         }
         final BridgeHandler handler = findTargetHandler(handlerName);
         if (handler == null) {
-            callBack.onResult(CallBackMessage.generateErrorMessage(CallBackMessage.CODE_NO_HANDLER, "handler with name " + handlerName + " is not registered in Java code"));
-            return;
+            errorCode = CODE_NO_HANDLER;
+            errorMessage = "handler with name " + handlerName + " is not registered in Java code";
+            throw new EasyBridgeInvokeException(errorCode, errorMessage);
         }
-        // global security check
-        if (!checkGlobalSecurity(currentPageUrl, parameters)) {
-            callBack.onResult(CallBackMessage.generateErrorMessage(CODE_SECURITY_FORBIDDEN, "handler with name " + handlerName + " is not allowed to invoke in page:" + currentPageUrl + " by the global Security Checker"));
-            return;
-        }
-        // handler security check
         if (handler.securityPolicyChecker() != null && !handler.securityPolicyChecker().check(currentPageUrl, parameters)) {
-            callBack.onResult(CallBackMessage.generateErrorMessage(CODE_SECURITY_FORBIDDEN, "handler with name " + handlerName + " is not allowed to invoke in page:" + currentPageUrl));
-            return;
+            errorCode = CODE_SECURITY_FORBIDDEN;
+            errorMessage = "handler with name " + handlerName + " is not allowed to invoke in page:" + currentPageUrl;
+            throw new EasyBridgeInvokeException(errorCode, errorMessage);
         }
-        // invoke the handler in main thread
-        callBackHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                handler.onCall(parameters, callBack);
-            }
-        });
+        return handler;
     }
 
     /**
@@ -99,7 +137,7 @@ final class EasyBridge {
      * @param result     the result from JavaScript
      */
     @JavascriptInterface
-    public void onExecuteJSCallback(String callbackId, final String result) {
+    void onExecuteJSCallback(String callbackId, final String result) {
         if (jsCallbackMap == null || jsCallbackMap.isEmpty() || TextUtils.isEmpty(callbackId)) {
             return;
         }
@@ -167,6 +205,9 @@ final class EasyBridge {
      * @return instance of {@link BridgeHandler},may be null if the match handler had not been registered yet
      */
     private BridgeHandler findTargetHandler(String handlerName) {
+        if (TextUtils.isEmpty(handlerName)) {
+            return null;
+        }
         if (registerHandlerMap == null || registerHandlerMap.isEmpty()) {
             return null;
         }
