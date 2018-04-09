@@ -18,7 +18,7 @@
                 });
             }, false);
 
-        function toast(params = 'toast data') {
+        function toast(params) {
             window.easyBridge.callHandler('toast', 'toast with:' + params + 'at ' + new Date().toLocaleString());
         }
 
