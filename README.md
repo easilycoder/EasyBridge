@@ -108,6 +108,9 @@ You can set your policy according to the current page's url and the parameters y
    -keepclassmembers class tech.easily.easybridge.lib.EasyBridge{
        public *;
    }
+   -keepclassmembernames class tech.easily.easybridge.lib.CallBackMessage{
+       <fields>;
+   }
    ```
 
 # <a name="README_CN">功能</a>
@@ -215,6 +218,9 @@ EasyBridge提供两种安全检查策略。其中全局的安全检查在EasyBri
    ```
    -keepclassmembers class tech.easily.easybridge.lib.EasyBridge{
        public *;
+   }
+   -keepclassmembernames class tech.easily.easybridge.lib.CallBackMessage{
+       <fields>;
    }
    ```
 
