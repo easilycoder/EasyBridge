@@ -110,7 +110,7 @@
 
     };
     //notify to native that the bridge had been injected finished
-    window[bridgeName].callHandler('rejectFinished');
+    window[bridgeName].callHandler('injectFinished');
     //notify to javascript that the bridge had been init
     var doc = document;
     var readyEvent = doc.createEvent('Events');

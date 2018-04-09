@@ -37,7 +37,7 @@ public class EasyBridgeWebView extends WebView {
     private static final String JAVA_SCRIPT_PROTOCOL = "javascript:";
     static final String MAPPING_JS_INTERFACE_NAME = "_easybridge";
     private static final String DEFAULT_BRIDGE_NAME = "easyBridge";
-    private static final String REGISTER_INJECT_FINISHED = "rejectFinished";
+    private static final String REGISTER_INJECT_FINISHED = "injectFinished";
     private final EasyBridge easyBridge;
     private String bridgeName = DEFAULT_BRIDGE_NAME;
     protected SecurityPolicyChecker policyChecker;
