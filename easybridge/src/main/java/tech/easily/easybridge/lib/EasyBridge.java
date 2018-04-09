@@ -2,6 +2,7 @@ package tech.easily.easybridge.lib;
 
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
@@ -27,16 +28,12 @@ import static tech.easily.easybridge.lib.CallBackMessage.CODE_SECURITY_FORBIDDEN
  */
 final class EasyBridge {
 
-    private static class CallBackHandler extends Handler {
-    }
-
-    private static final String JAVA_SCRIPT_PROTOCOL = "javascript:";
     private static final String CALLBACK_FUNCTION = "%s._dispatchResult(\"%s\",\'%s\')";
     private static final String EXECUTE_SCRIPT = "%s._executeScript(\'%s\',\'%s\',\'%s\')";
 
     private Map<String, BridgeHandler> registerHandlerMap;
     private Map<String, ResultCallBack> jsCallbackMap;
-    private CallBackHandler callBackHandler;
+    private Handler callBackHandler;
     private SoftReference<EasyBridgeWebView> bridgeWebView;
     private String bridgeName;
     private static long uniqueId = 1;
@@ -46,7 +43,7 @@ final class EasyBridge {
         registerHandlerMap = new HashMap<>();
         jsCallbackMap = new HashMap<>();
         this.bridgeWebView = new SoftReference<>(webView);
-        this.callBackHandler = new CallBackHandler();
+        this.callBackHandler = new Handler(Looper.getMainLooper());
     }
 
 
@@ -176,26 +173,19 @@ final class EasyBridge {
             return;
         }
         final String callBackScript = String.format(CALLBACK_FUNCTION, bridgeName, callbackId, parameters);
+        executeScriptInMain(callBackScript);
+    }
+
+    private void executeScriptInMain(final String script) {
+        if (bridgeWebView == null || bridgeWebView.get() == null) {
+            return;
+        }
         callBackHandler.post(new Runnable() {
             @Override
             public void run() {
-                executeScriptInMain(callBackScript);
+                bridgeWebView.get().evaluateJavascript(script);
             }
         });
-    }
-
-    private void executeScriptInMain(String script) {
-        // 如果系统版本在android4.4及以上，则使用evaluateJavascript，这个方法可以拿到js执行的返回值，否则使用loadUrl
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            bridgeWebView.get().evaluateJavascript(script, new ValueCallback<String>() {
-                @Override
-                public void onReceiveValue(String value) {
-
-                }
-            });
-        } else {
-            bridgeWebView.get().loadUrl(String.format("%s%s", JAVA_SCRIPT_PROTOCOL, script));
-        }
     }
 
     /**

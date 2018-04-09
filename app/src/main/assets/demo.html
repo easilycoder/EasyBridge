@@ -18,14 +18,13 @@
                 });
             }, false);
 
-        function toast(params = 'toast sync') {
-            window.easyBridge.callHandler('toast', 'toast with:' + params + 'at ' + new Date().toLocaleString());
+        function toast(params) {
+            easyBridge.callHandler('toast', 'toast sync with:' + params + 'at ' + new Date().toLocaleString());
         }
 
-        function toastAsync(params = 'toast Async'){
-            easyBridge.callHandler('toast', 'toast with:' + params + 'at ' + new Date().toLocaleString(),function(result){
+        function toastAsync(params){
+            easyBridge.callHandler('toast', 'toast Async with:' + params + 'at ' + new Date().toLocaleString(),function(result){
                 console.log('callback data:'+result);
-
             });
         }
 
