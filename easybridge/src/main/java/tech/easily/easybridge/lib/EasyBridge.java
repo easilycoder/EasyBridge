@@ -135,7 +135,7 @@ final class EasyBridge {
             return;
         }
         final String callBackScript = String.format(CALLBACK_FUNCTION, bridgeName, callbackId, parameters);
-
+        executeScriptInMain(callBackScript);
     }
 
     private void executeScriptInMain(final String script) {
