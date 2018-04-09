@@ -55,7 +55,7 @@ final class EasyBridge {
      * @param callbackId  the unique id to invoke js callback function
      */
     @JavascriptInterface
-    void enqueue(String handlerName, String currentPageUrl, final String parameters, String callbackId) {
+    public void enqueue(String handlerName, String currentPageUrl, final String parameters, String callbackId) {
         final Gson gson = new GsonBuilder().create();
         final ResultCallBack callBack = new ResultCallBack(callbackId) {
             @Override
@@ -87,7 +87,7 @@ final class EasyBridge {
      * @return
      */
     @JavascriptInterface
-    String onRealCall(String handlerName, String currentPageUrl, final String parameters) {
+    public String onRealCall(String handlerName, String currentPageUrl, final String parameters) {
         final Gson gson = new GsonBuilder().create();
         CallBackMessage result = null;
         try {
@@ -134,7 +134,7 @@ final class EasyBridge {
      * @param result     the result from JavaScript
      */
     @JavascriptInterface
-    void onExecuteJSCallback(String callbackId, final String result) {
+    public void onExecuteJSCallback(String callbackId, final String result) {
         if (jsCallbackMap == null || jsCallbackMap.isEmpty() || TextUtils.isEmpty(callbackId)) {
             return;
         }
