@@ -108,8 +108,8 @@
 
     function _resolveResult(result) {
         console.log(result);
-        if (result) {
-            result = typeof result == 'object' ? JSON.stringify(result) : JSON.parse(result.replace(/\n/g, '\\\\n'));
+        if (typeof result == 'string') {
+            result = JSON.parse(result.replace(/\n/g, '\\\\n'));
         }
         return result;
     }
