@@ -19,7 +19,9 @@
             }, false);
 
         function toast(params) {
-            window.easyBridge.callHandler('toast', 'toast with:' + params + 'at ' + new Date().toLocaleString());
+            window.easyBridge.callHandler('toast', 'toast with:' + params + 'at ' + new Date().toLocaleString(),function(result){
+                console.log('receive data:'+result);
+            });
         }
 
         function jumpToPage(){

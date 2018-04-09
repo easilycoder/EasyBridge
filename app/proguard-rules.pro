@@ -22,3 +22,6 @@
 -keepclassmembers class tech.easily.easybridge.lib.EasyBridge{
     public *;
 }
+-keepclassmembernames class tech.easily.easybridge.lib.CallBackMessage{
+    <fields>;
+}

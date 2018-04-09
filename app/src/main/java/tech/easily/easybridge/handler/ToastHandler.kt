@@ -13,6 +13,6 @@ import tech.easily.easybridge.lib.handler.BaseBridgeHandler
 class ToastHandler(handlerName:String,webView: EasyBridgeWebView) : BaseBridgeHandler(handlerName,webView) {
     override fun onCall(parameters: String?, callBack: ResultCallBack?) {
         Toast.makeText(webView.context, parameters, Toast.LENGTH_SHORT).show()
-        callBack?.onResult(null)
+        callBack?.onResult("data send to js")
     }
 }
