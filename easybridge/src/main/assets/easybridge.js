@@ -30,10 +30,8 @@
         }
         //the name '_easybridge' is an java object that mapping to a javascript object,using addJavaInterface in Java code
         if (window._easybridge) {
-            setTimeout(function () {
-                //the function enqueue is the pubic method from Java Code,using to call Java logic
-                _easybridge.enqueue(handlerName, location.href, parameters, callbackId);
-            }, 0);
+            //the function enqueue is the pubic method from Java Code,using to call Java logic
+            _easybridge.enqueue(handlerName, location.href, parameters, callbackId);
         } else {
             console.error(bridgeName + ':' + "the mapping object '_easybridge' had not been added any more");
         }
@@ -111,6 +109,8 @@
         _dispatchResult: _dispatchResult,
 
     };
+    //notify to native that the bridge had been injected finished
+    window[bridgeName].callHandler('rejectFinished');
     //notify to javascript that the bridge had been init
     var doc = document;
     var readyEvent = doc.createEvent('Events');

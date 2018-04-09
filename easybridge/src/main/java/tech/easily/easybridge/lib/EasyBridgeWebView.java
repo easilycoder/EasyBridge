@@ -3,13 +3,21 @@ package tech.easily.easybridge.lib;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import tech.easily.easybridge.lib.handler.BaseBridgeHandler;
 import tech.easily.easybridge.lib.handler.BridgeHandler;
 
 /**
@@ -26,11 +34,15 @@ import tech.easily.easybridge.lib.handler.BridgeHandler;
  */
 public class EasyBridgeWebView extends WebView {
 
+    private static final String JAVA_SCRIPT_PROTOCOL = "javascript:";
     static final String MAPPING_JS_INTERFACE_NAME = "_easybridge";
     private static final String DEFAULT_BRIDGE_NAME = "easyBridge";
+    private static final String REGISTER_INJECT_FINISHED = "rejectFinished";
     private final EasyBridge easyBridge;
     private String bridgeName = DEFAULT_BRIDGE_NAME;
     protected SecurityPolicyChecker policyChecker;
+    // whether the bridge had been injected to the currentPage
+    private volatile boolean isInjected;
 
     public EasyBridgeWebView(Context context, String bridgeName) {
         this(context, (AttributeSet) null);
@@ -60,6 +72,13 @@ public class EasyBridgeWebView extends WebView {
         addJavascriptInterface(easyBridge, MAPPING_JS_INTERFACE_NAME);
         EasyBridgeWebChromeClient webChromeClient = new EasyBridgeWebChromeClient(this);
         setWebChromeClient(webChromeClient);
+        //register a default handler to subscribe the event of bridge injected
+        registerHandler(new BaseBridgeHandler(REGISTER_INJECT_FINISHED, this) {
+            @Override
+            public void onCall(String parameters, ResultCallBack callBack) {
+                setInjected(true);
+            }
+        });
     }
 
     public void registerHandler(BridgeHandler handler) {
@@ -98,6 +117,14 @@ public class EasyBridgeWebView extends WebView {
         return bridgeName;
     }
 
+    public boolean isInjected() {
+        return isInjected;
+    }
+
+    void setInjected(boolean injected) {
+        isInjected = injected;
+    }
+
     public boolean checkSecurityGlobally(String url, String parameters) {
         return policyChecker == null || policyChecker.check(url, parameters);
     }
@@ -112,9 +139,28 @@ public class EasyBridgeWebView extends WebView {
         this.policyChecker = policyChecker;
     }
 
+    public void evaluateJavascript(String script) {
+        evaluateJavascript(script, new ValueCallback<String>() {
+            @Override
+            public void onReceiveValue(String value) {
+
+            }
+        });
+    }
+
+    @Override
+    public void evaluateJavascript(String script, @Nullable ValueCallback<String> resultCallback) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            super.evaluateJavascript(script, resultCallback);
+        } else {
+            loadUrl(String.format("%s%s", JAVA_SCRIPT_PROTOCOL, script));
+        }
+    }
+
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        policyChecker = null;
         if (easyBridge != null) {
             easyBridge.destroy();
         }
