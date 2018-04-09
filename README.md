@@ -102,6 +102,14 @@ You can set your policy according to the current page's url and the parameters y
    }
    ```
 
+4. Add the progurad rules to your file
+
+   ```
+   -keepclassmembers class tech.easily.easybridge.lib.EasyBridge{
+       public *;
+   }
+   ```
+
 # <a name="README_CN">功能</a>
 
 #### ✔️ 注入jsbridge添加重试机制
@@ -199,6 +207,14 @@ EasyBridge提供两种安全检查策略。其中全局的安全检查在EasyBri
    dependencies {
    	compile 'com.github.easilycoder.EasyBridge:easybridge-annotation:0.0.1' // change the version to the newest one
    	annotationProcessor 'com.github.easilycoder.EasyBridge:easybridge-processor:0.0.1' // change the version to the newest one
+   }
+   ```
+
+4. 添加混淆规则：
+
+   ```
+   -keepclassmembers class tech.easily.easybridge.lib.EasyBridge{
+       public *;
    }
    ```
 

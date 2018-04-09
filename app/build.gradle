@@ -16,12 +16,44 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+    signingConfigs {
+        debug {
+            storeFile file('keystore')
+            storePassword "tech.easily"
+            keyAlias "easybridge"
+            keyPassword "tech.easily"
+        }
+
+        release{
+            storeFile file('keystore')
+            storePassword "tech.easily"
+            keyAlias "easybridge"
+            keyPassword "tech.easily"
         }
     }
+
+
+    buildTypes {
+        release {
+            shrinkResources true
+            debuggable false
+            zipAlignEnabled true
+            minifyEnabled true
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug{
+            signingConfig signingConfigs.debug
+            zipAlignEnabled false
+            minifyEnabled false
+            shrinkResources false
+            debuggable false
+        }
+    }
+
+
 }
 
 dependencies {
