@@ -13,7 +13,7 @@
                 toast('inject finished');
                 window.easyBridge.registerHandler('resultBack', function (parameters, callback) {
                     if (typeof callback == 'function') {
-                        callback(parameters);
+                        callback('callback from JavaScript,this is the data received from Java:'+parameters);
                     }
                 });
             }, false);
@@ -28,10 +28,20 @@
             });
         }
 
+        function getUserObject(){
+            easyBridge.callHandler('getUserInfo',function(result){
+                console.log('data receive:'+result);
+                if(typeof result == 'object'){
+                    console.log('json string of the result object is:'+JSON.stringify(result));
+                }
+            });
+        }
+
         function jumpToPage(){
             var url=document.getElementById('tv_url').value;
             window.open(url);
         }
+
     </script>
 </head>
 
@@ -40,13 +50,11 @@
 <input type="text" value="http://google.com" id="tv_url">
 <input type="button" value="jump" onclick="jumpToPage()">
 
-<a href="javascript:toast('click toast')">
-    <h3>同步调用Toast</h3>
-</a>
+<a href="javascript:toast('click toast')"><h3>同步调用Toast</h3></a>
 
-<a href="javascript:toastAsync('click toast')">
-    <h3>异步调用Toast</h3>
-</a>
+<a href="javascript:toastAsync('click toast')"><h3>异步调用Toast</h3></a>
+
+<a href="javascript:getUserObject()"><h3>获取用户对象</h3></a>
 
 </body>
 

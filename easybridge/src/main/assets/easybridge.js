@@ -107,7 +107,6 @@
     }
 
     function _resolveResult(result) {
-        console.log(result);
         if (typeof result == 'string') {
             result = JSON.parse(result.replace(/\n/g, '\\\\n'));
         }
