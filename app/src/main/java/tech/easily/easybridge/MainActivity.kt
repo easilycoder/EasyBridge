@@ -2,14 +2,14 @@ package tech.easily.easybridge
 
 import android.net.Uri
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.webkit.*
 import android.widget.Toast
 import tech.easily.easybridge.lib.EBHandlerManager
 import tech.easily.easybridge.lib.EasyBridgeWebChromeClient
-import tech.easily.easybridge.lib.ResultCallBack
 import kotlinx.android.synthetic.main.activity_main.*
+import tech.easily.easybridge.lib.ResultCallBack
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,6 +25,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
+        tvCallJS.setOnClickListener {
+            webView.callHandler("resultBack", "this is the value pass from Java", object : ResultCallBack() {
+                override fun onResult(result: Any?) {
+                    Toast.makeText(this@MainActivity, result?.toString(), Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
         EBHandlerManager.register(webView)
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
@@ -44,15 +51,6 @@ class MainActivity : AppCompatActivity() {
                 else -> true
             }
         }))
-        // call JavaScript From Java
-        webView.postDelayed({
-            webView.callHandler("resultBack", "this is the value pass from Java", object : ResultCallBack() {
-                override fun onResult(result: Any?) {
-                    Toast.makeText(this@MainActivity, result?.toString(), Toast.LENGTH_SHORT).show()
-                }
-
-            })
-        }, 5000)
     }
 
     override fun onBackPressed() {
