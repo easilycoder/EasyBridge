@@ -45,6 +45,7 @@ public class EasyBridgeWebChromeClient extends WebChromeClient {
             }
             // TODO: 2018/4/3 it seems that the url received here possibly not the same as the real page url we look forward to
             if (easyBridgeWebView.checkSecurityGlobally(view.getUrl(), SECURITY_CHECK_PARAMETERS)) {
+                Logger.debug("start to inject bridge at [page]:" + view.getUrl() + " [currentLoadingProgress]:" + newProgress);
                 injectBridgeTask.start();
             } else {
                 deleteBridge();
@@ -63,6 +64,9 @@ public class EasyBridgeWebChromeClient extends WebChromeClient {
         easyBridgeWebView.evaluateJavascript(injectScript);
     }
 
+    private String getCurrentURL() {
+        return easyBridgeWebView == null ? "" : easyBridgeWebView.getUrl();
+    }
 
     private boolean isInjected() {
         return easyBridgeWebView != null && easyBridgeWebView.isInjected();
@@ -100,6 +104,9 @@ public class EasyBridgeWebChromeClient extends WebChromeClient {
         @Override
         public void run() {
             if (!webChromeClient.isInjected() && retryCount <= RETRY_COUNT) {
+                if (retryCount > 0) {
+                    Logger.debug("retry to inject bridge at [page]:+" + webChromeClient.getCurrentURL() + ",retry time:" + retryCount);
+                }
                 webChromeClient.injectBridge();
                 retryCount++;
                 mainHandler.postDelayed(this, RETRY_DELAY_INTERVAL);

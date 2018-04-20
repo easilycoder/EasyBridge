@@ -4,6 +4,8 @@
 
 # UPDATES
 
+* 2017/04/20 add Logger that will log the important information which is helpful for debug
+
 * 2017/04/09 adding the retry mechanism of injecting bridge
 
 * 2017/04/08  invoke Java synchornized from Javascript is now enable in `feature/sync`
@@ -125,7 +127,7 @@ You can set your policy according to the current page's url and the parameters y
 
 **因为JavaScript是单线程的，所以我们能确保同一个页面不会出现重复注入bridge的情况**
 
-####  使用apt技术注册handler
+#### ✔️ 使用apt技术注册handler
 
 支持使用apt技术，完成注册handler的功能，步骤如下：
 

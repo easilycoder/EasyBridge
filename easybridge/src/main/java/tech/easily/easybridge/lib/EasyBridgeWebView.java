@@ -76,6 +76,7 @@ public class EasyBridgeWebView extends WebView {
         registerHandler(new BaseBridgeHandler(REGISTER_INJECT_FINISHED, this) {
             @Override
             public void onCall(String parameters, ResultCallBack callBack) {
+                Logger.debug("inject bridge success in page:" + getUrl());
                 setInjected(true);
             }
         });
@@ -137,6 +138,11 @@ public class EasyBridgeWebView extends WebView {
      */
     public void setPolicyChecker(SecurityPolicyChecker policyChecker) {
         this.policyChecker = policyChecker;
+    }
+
+    public EasyBridgeWebView setDebuggable(boolean debuggable) {
+        Logger.setDebuggable(debuggable);
+        return this;
     }
 
     public void evaluateJavascript(String script) {

@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
             })
         }
         EBHandlerManager.register(webView)
+        webView.setDebuggable(BuildConfig.DEBUG)
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                 return false

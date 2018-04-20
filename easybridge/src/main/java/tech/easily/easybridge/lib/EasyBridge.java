@@ -54,6 +54,7 @@ final class EasyBridge {
      */
     @JavascriptInterface
     public void enqueue(String handlerName, String currentPageUrl, final String parameters, String callbackId) {
+        Logger.debug(String.format("receive call from JavaScript,[handlerName]:%s [currentPage]:%s [parameters]:%s [requestId]:%s", handlerName, currentPageUrl, parameters, callbackId));
         final Gson gson = new GsonBuilder().create();
         final ResultCallBack callBack = new ResultCallBack(callbackId) {
             @Override
@@ -62,22 +63,30 @@ final class EasyBridge {
             }
         };
         if (TextUtils.isEmpty(handlerName)) {
-            callBack.onResult(CallBackMessage.generateErrorMessage(CallBackMessage.CODE_INVALID_HANDLER, "the handlerName is not invalid"));
+            String errorMessage = "the [handlerName]:" + handlerName + " is not invalid";
+            callBack.onResult(CallBackMessage.generateErrorMessage(CallBackMessage.CODE_INVALID_HANDLER, errorMessage));
+            Logger.error(errorMessage);
             return;
         }
         final BridgeHandler handler = findTargetHandler(handlerName);
         if (handler == null) {
-            callBack.onResult(CallBackMessage.generateErrorMessage(CallBackMessage.CODE_NO_HANDLER, "handler with name " + handlerName + " is not registered in Java code"));
+            String errorMessage = "the [handlerName]:" + handlerName + " is not registered in Java code";
+            callBack.onResult(CallBackMessage.generateErrorMessage(CallBackMessage.CODE_NO_HANDLER, errorMessage));
+            Logger.error(errorMessage);
             return;
         }
         // global security check
         if (!checkGlobalSecurity(currentPageUrl, parameters)) {
-            callBack.onResult(CallBackMessage.generateErrorMessage(CODE_SECURITY_FORBIDDEN, "handler with name " + handlerName + " is not allowed to invoke in page:" + currentPageUrl + " by the global Security Checker"));
+            String errorMessage = "the [handlerName]:" + handlerName + " is not allowed to invoke in [page]:" + currentPageUrl + " by the global Security Checker,with [parameters]:" + parameters;
+            callBack.onResult(CallBackMessage.generateErrorMessage(CODE_SECURITY_FORBIDDEN, errorMessage));
+            Logger.error(errorMessage);
             return;
         }
         // handler security check
         if (handler.securityPolicyChecker() != null && !handler.securityPolicyChecker().check(currentPageUrl, parameters)) {
-            callBack.onResult(CallBackMessage.generateErrorMessage(CODE_SECURITY_FORBIDDEN, "handler with name " + handlerName + " is not allowed to invoke in page:" + currentPageUrl));
+            String errorMessage = "the [handlerName]:" + handlerName + " is not allowed to invoke in [page]:" + currentPageUrl + ",with [parameters]:" + parameters;
+            callBack.onResult(CallBackMessage.generateErrorMessage(CODE_SECURITY_FORBIDDEN, errorMessage));
+            Logger.error(errorMessage);
             return;
         }
         // invoke the handler in main thread
@@ -109,6 +118,7 @@ final class EasyBridge {
                     resultCallBack.onResult(result);
                 }
             });
+            Logger.debug(String.format("receive result from JavaScript,[callbackId]:%s [result]:%s", callbackId, result));
         }
     }
 
@@ -120,6 +130,7 @@ final class EasyBridge {
         }
         String executeScript = String.format(EXECUTE_SCRIPT, bridgeName, handlerName, parameters, callbackId);
         executeScriptInMain(executeScript);
+        Logger.debug(String.format("call JavaScript in Java,[handlerName]:%s [parameters]:%s [requestId]:%s", handlerName, parameters, callbackId));
     }
 
 
@@ -136,6 +147,7 @@ final class EasyBridge {
         }
         final String callBackScript = String.format(CALLBACK_FUNCTION, bridgeName, callbackId, parameters);
         executeScriptInMain(callBackScript);
+        Logger.debug(String.format("dispatchResult to JavaScript,[callbackId]:%s [result]:%s", callbackId, parameters));
     }
 
     private void executeScriptInMain(final String script) {
