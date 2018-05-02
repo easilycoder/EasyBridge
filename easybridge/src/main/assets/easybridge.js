@@ -58,6 +58,9 @@
                 callbackFunc = function (result) {
                     if (window._easybridge) {
                         //the method onExecuteJSCallback is a Java Code,using to dispatch result after execute the JavaScript function from Java
+                        if (typeof result == 'object') {
+                            result = JSON.stringify(result);
+                        }
                         _easybridge.onExecuteJSCallback(callbackId, result);
                     } else {
                         console.error(bridgeName + ':' + "the mapping object '_easybridge' had not been added any more");
