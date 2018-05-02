@@ -4,6 +4,11 @@
 
 # UPDATES
 
+* 2017/05/02 
+
+  * fix the bug that can not get the correct value when calling  JavaScript in Java with object type value returned
+  * add `OnBridgeInjectedListener` ,it's available to observe the bridge injected event in Java code now.
+
 * 2017/04/20 add Logger that will log the important information which is helpful for debug
 
 * 2017/04/09 adding the retry mechanism of injecting bridge
