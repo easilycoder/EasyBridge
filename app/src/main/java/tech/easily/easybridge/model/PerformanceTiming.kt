@@ -1,4 +1,4 @@
-package tech.easily.webviewperformancedemo
+package tech.easily.easybridge.model
 
 data class PerformanceTiming(val connectEnd: Long, val connectStart: Long, val domComplete: Long, val domContentLoadedEventEnd: Long,
                              val domContentLoadedEventStart: Long, val domInteractive: Long, val domLoading: Long, val domainLookupEnd: Long,

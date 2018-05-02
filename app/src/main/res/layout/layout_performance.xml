@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="#50000000"
+    android:background="#60000000"
     android:orientation="vertical">
 
     <LinearLayout
@@ -17,7 +17,7 @@
             android:text="网络耗时：" />
 
         <TextView
-            android:id="@+id/tv_net"
+            android:id="@+id/tvNet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
@@ -34,7 +34,7 @@
             android:text="渲染耗时：" />
 
         <TextView
-            android:id="@+id/tv_render"
+            android:id="@+id/tvRender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
@@ -51,7 +51,7 @@
             android:text="总耗时长：" />
 
         <TextView
-            android:id="@+id/tv_total"
+            android:id="@+id/tvTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>

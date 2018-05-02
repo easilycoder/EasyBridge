@@ -22,4 +22,14 @@
         android:text="callJS"
         android:textColor="#fff" />
 
+
+    <include
+        android:layout_margin="16dp"
+        android:id="@+id/llPerformance"
+        layout="@layout/layout_performance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        android:visibility="gone" />
+
 </FrameLayout>
