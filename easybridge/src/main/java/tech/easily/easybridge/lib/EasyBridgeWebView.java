@@ -34,6 +34,13 @@ import tech.easily.easybridge.lib.handler.BridgeHandler;
  */
 public class EasyBridgeWebView extends WebView {
 
+    public interface OnBridgeInjectedListener {
+        /**
+         * observe the bridge injected event of each page
+         */
+        void onInjected();
+    }
+
     private static final String JAVA_SCRIPT_PROTOCOL = "javascript:";
     static final String MAPPING_JS_INTERFACE_NAME = "_easybridge";
     private static final String DEFAULT_BRIDGE_NAME = "easyBridge";
@@ -43,6 +50,7 @@ public class EasyBridgeWebView extends WebView {
     protected SecurityPolicyChecker policyChecker;
     // whether the bridge had been injected to the currentPage
     private volatile boolean isInjected;
+    private OnBridgeInjectedListener listener;
 
     public EasyBridgeWebView(Context context, String bridgeName) {
         this(context, (AttributeSet) null);
@@ -77,6 +85,9 @@ public class EasyBridgeWebView extends WebView {
             @Override
             public void onCall(String parameters, ResultCallBack callBack) {
                 Logger.debug("inject bridge success in page:" + getUrl());
+                if (listener != null) {
+                    listener.onInjected();
+                }
                 setInjected(true);
             }
         });
@@ -97,6 +108,9 @@ public class EasyBridgeWebView extends WebView {
     // use to execute JavaScript
     public void callHandler(String handlerName, String parameters, ResultCallBack resultCallBack) {
         if (easyBridge != null) {
+            if (parameters == null) {
+                parameters = "";
+            }
             easyBridge.callHandler(handlerName, parameters, resultCallBack);
         }
     }
@@ -138,6 +152,10 @@ public class EasyBridgeWebView extends WebView {
      */
     public void setPolicyChecker(SecurityPolicyChecker policyChecker) {
         this.policyChecker = policyChecker;
+    }
+
+    public void setBridgeInjectedListener(OnBridgeInjectedListener listener) {
+        this.listener = listener;
     }
 
     public EasyBridgeWebView setDebuggable(boolean debuggable) {
