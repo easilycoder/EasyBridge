@@ -53,8 +53,10 @@ public class EasyBridgeWebView extends WebView {
     private OnBridgeInjectedListener listener;
 
     public EasyBridgeWebView(Context context, String bridgeName) {
-        this(context, (AttributeSet) null);
+        super(context);
         this.bridgeName = bridgeName;
+        easyBridge = new EasyBridge(this, bridgeName);
+        initWebView();
     }
 
     public EasyBridgeWebView(Context context, AttributeSet attrs) {
