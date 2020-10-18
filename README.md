@@ -6,16 +6,16 @@
 
 * 2017/05/02 
 
-  * fix the bug that can not get the correct value when calling  JavaScript in Java with object type value returned
-  * add `OnBridgeInjectedListener` ,it's available to observe the bridge injected event in Java code now.
+  * Fix the bug that can not get the correct value when calling JavaScript in Java with object type value returned.
+  * Add `OnBridgeInjectedListener`, it's available to observe the bridge injected event in Java code now.
 
-* 2017/04/20 add Logger that will log the important information which is helpful for debug
+* 2017/04/20 add Logger that will log the important information which is helpful to debug
 
 * 2017/04/09 adding the retry mechanism of injecting bridge
 
 * 2017/04/08  invoke Java synchornized from Javascript is now enable in `feature/sync`
 
-  Now the `BridgeHandler` has two function to be invoked from JavaScript.If the JavaScirpt invoke Java with a callback function,the Java method will be invoked Synchronizlly ,otherwise the Java method will be invoked asynchronous.
+  Now the `BridgeHandler` has two functions to be invoked from JavaScript. If the JavaScirpt invoke Java with a callback function, then the Java method will be invoked Synchronizlly, otherwise the Java method will be invoked Asynchronous.
 
   **the feature/sync may be merged into master oneday future**
 
@@ -24,35 +24,35 @@
 
 #### ✔️Inject Bridge with retry mechanism 
 
-Now when EasyBridge try to inject a comunication bridge into the page,it will retry at most five times to make sure that the bridge is injected successfully .It works as below:
+When EasyBridge try to inject a comunication bridge into the page, it will retry at most five times to make sure that the bridge is injected successfully. It works as below:
 
-1. `EasyBridgeWebView` will register a handler name "injectFinished" default
-2. when the bridge injected finish,it will invoke the handler in step one, and set the injected status to be true
-3. When injecting a bridge ,it will start a task `InjectBridgeTask`,it will try to inject the bridge every 300ms at most 5 times,if the injected status  is false 
+1. `EasyBridgeWebView` will register a handler name "injectFinished" default.
+2. When the bridge injected finish, it will invoke the handler in step one, and set the injected status to be true.
+3. When injecting a bridge, it will start a task `InjectBridgeTask`, it will try to inject the bridge every 300ms at most than 5 times, if the injected status is false.
 
-**because of the single thread mechanism in JavaScrpt,we will make sure that the bridge will not be injected twice in the same page** 
+**because of the single thread mechanism in JavaScrpt, we will make sure that the bridge will not be injected twice in the same page** 
 
 #### ✔️ Register Handler with APT
 
-Now you can register Handlers using the APT tech.Follow the steps:
+Now you can register Handlers using the APT tech. Follow the steps:
 
-1. add the jitpack dependencies as below ;
-2. add the annotation `@EasyBridgeHandler` to your handler;
+1. Add the jitpack dependencies as below ;
+2. Add the annotation `@EasyBridgeHandler` to your handler;
 3. A class Named `EBHandlerManager` will be generated after buiding the project;
-4. call the static method `EBHandlerManager#register(webview)` when you init the webview for the activity/fragment.
+4. Call the static method `EBHandlerManager#register(webview)` when you init the webview for the activity/fragment.
 
 #### ✔️ Using Java IN JavaScript
 
-EasyBridge allow you to invoke Java function both in **Synchronize** and **Asynchronous** ways.(But it's pity that the Asynchronous way is only opened for you nowadays)
+EasyBridge allow you to invoke Java function both in **Synchronize** and **Asynchronous** ways. (But it's pity that currently the Asynchronous way is only opened for you)
 
 Follow the steps:
 
 1. Register the document event `WebViewJavascriptBridgeReady` in your JavaScript logic;
-2. Using the `easyBridge#callHandler(handlerName, args, callback)`in your JavaScript when you received the event that the bridge had been injected.The object named `easyBridge`can be renamed as you like.
+2. Using the `easyBridge#callHandler(handlerName, args, callback)`in your JavaScript when you received the event that the bridge had been injected. The object named `easyBridge`can be renamed as you like.
 
 #### ✔️ Using JavaScript IN Java
 
-You can call all the JavaScirpt function that had been registed to the `easyBridge`.Steps as follow:
+You can call all the JavaScirpt function that had been registed to the `easyBridge`. Steps as follows:
 
 1. Register the document event `WebViewJavascriptBridgeReady` in your JavaScript logic;
 2. Using the `easyBridge#registerHandler(handlerName, handler)`to registed all the functions that you want to be invoked in Java;
@@ -79,9 +79,9 @@ You can set your policy according to the current page's url and the parameters y
 
 # DEPENDENCIES
 
-**EasyBridge** had been pubished to [Jitpack](https://jitpack.io/#easilycoder/EasyBridge), add the dependencies to your project before using it,follow the steps:
+**EasyBridge** had been pubished to [Jitpack](https://jitpack.io/#easilycoder/EasyBridge), add the dependencies to your project before using it, follow the steps:
 
-1. add the Jitpack responsitory
+1. Add the Jitpack responsitory
 
    ```gradle
    allprojects {
@@ -92,7 +92,7 @@ You can set your policy according to the current page's url and the parameters y
    }
    ```
 
-2. add the core dependencies of EasyBridge
+2. Add the core dependencies of EasyBridge
 
    ```gralde
    dependencies {
